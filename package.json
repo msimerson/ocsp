@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "lint": "standard --env mocha",
+    "lint:fix": "standard --fix --env mocha",
     "test": "mocha"
   },
   "keywords": [

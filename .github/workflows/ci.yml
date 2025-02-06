@@ -1,6 +1,10 @@
 name: CI Tests
 
-on: [ push, pull_request ]
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: master
 
 env:
   CI: true
@@ -8,6 +12,8 @@ env:
 jobs:
   ci-test:
     needs: [get-lts]
+    permissions:
+      contents: read
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -16,11 +22,11 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 1
 
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v6
       name: Use Node.js ${{ matrix.node-version }}
       with:
         node-version: ${{ matrix.node-version }}
@@ -30,6 +36,8 @@ jobs:
 
   get-lts:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - id: get
         uses: msimerson/node-lts-versions@v1
