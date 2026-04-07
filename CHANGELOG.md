@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### [1.2.0] - 2026-04-07
+
+- dep(simple-lru-cache): replaced with native Map
+
 ## [1.1.1] (@haraka/ocsp — msimerson)
 
 - doc(README): updated with modern syntax
@@ -51,8 +55,9 @@
 
 ## Prior history
 
-[1.1.1]: https://github.com/msimerson/ocsp/releases/tag/v1.1.1
-[1.1.0]: https://github.com/msimerson/ocsp/releases/tag/v1.1.0
-
 See the [indutny/ocsp](https://github.com/indutny/ocsp) repository for the
 original version history by Fedor Indutny.
+
+[1.2.0]: https://github.com/msimerson/ocsp/releases/tag/v1.2.0
+[1.1.1]: https://github.com/msimerson/ocsp/releases/tag/v1.1.1
+[1.1.0]: https://github.com/msimerson/ocsp/releases/tag/v1.1.0
