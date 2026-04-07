@@ -1,10 +1,9 @@
+const { describe, it, beforeEach } = require('node:test')
+const https = require('node:https')
+
 const ocsp = require('../')
-const https = require('https')
 
 describe('OCSP Agent', function () {
-  // Retry all tests in this suite up to 4 times
-  this.retries(4)
-
   let a
   beforeEach(function () {
     a = new ocsp.Agent()
@@ -19,18 +18,18 @@ describe('OCSP Agent', function () {
     'microsoft.com'
   ]
 
-  websites.forEach(function (host) {
-    it('should connect and validate ' + host, function (cb) {
+  for (const host of websites) {
+    it('should connect and validate ' + host, (t, done) => {
       https.get({
         host,
         port: 443,
         agent: a
       }, function (res) {
         res.resume()
-        cb()
+        done()
       })
     })
-  })
+  }
 })
 
 describe('OCSP Agent failed', function () {
@@ -46,16 +45,15 @@ describe('OCSP Agent failed', function () {
     'untrusted-root.badssl.com'
   ]
 
-  websites.forEach(function (host) {
-    it('should connect and emit error ' + host, function (cb) {
-      this.timeout(4000)
+  for (const host of websites) {
+    it('should connect and emit error ' + host, { timeout: 4000 }, (t, done) => {
       https.get({
         host,
         port: 443,
         agent: a
-      }).on('error', (e) => {
-        cb()
+      }).on('error', () => {
+        done()
       })
     })
-  })
+  }
 })

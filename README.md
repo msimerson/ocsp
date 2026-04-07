@@ -98,18 +98,18 @@ NOTE: Constructor accepts an `options` object with the following properties:
 
 Usage:
 
-```javascript
-var server = ocsp.Server.create({
+```js
+const server = ocsp.Server.create({
   caCert: cacert, // optional, defaults to `cert` if not supplied
   cert: cert,
   key: key
-});
+})
 
 server.addCert(43, 'good');
 server.addCert(44, 'revoked', {
   revocationTime: new Date(),
   revocationReason: 'CACompromise'
-});
+})
 
 server.listen(8000);
 ```
@@ -133,16 +133,16 @@ Has the following methods:
 
 Usage:
 
-```javascript
+```js
 ocsp.check({
   cert: cert,
   issuer: issuerCert
 }, function(err, res) {
   if (err)
-    throw err;
+    throw err
 
-  console.log(res);
-});
+  console.log(res)
+})
 ```
 
 Send an OCSP request to the CA and ask if the cert is still valid. `res`
@@ -157,13 +157,13 @@ Options:
 
 Usage:
 
-```javascript
+```js
 ocsp.verify({
   request: request,
   // Optional, `issuer: issuerCert,`
   response: response
 }, function(err, res) {
-});
+})
 ```
 
 Verify that `response` matches the `request` and is signed by the CA.
@@ -184,7 +184,7 @@ Usage:
 
 ```javascript
 ocsp.getOCSPURI(cert, function(err, uri) {
-});
+})
 ```
 
 Get the URI of the OCSP server from a certificate.
