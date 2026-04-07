@@ -1,7 +1,7 @@
 {
-  "name": "@ranierimazili/ocsp",
-  "version": "1.0.2",
-  "description": "OCSP Stapling implementation",
+  "name": "@haraka/ocsp",
+  "version": "1.1.0",
+  "description": "OCSP client and server APIs for node.js",
   "main": "lib/ocsp.js",
   "files": [
     "lib"
@@ -16,10 +16,15 @@
     "ASN.1",
     "Stapling"
   ],
-  "author": "Ranieri Mazili <ranieri85@gmail.com>",
+  "author": "Fedor Indutny <fedor@indutny.com> (https://github.com/indutny)",
+  "contributors": [
+    "TechTeamer (https://github.com/TechTeamer)",
+    "Ranieri Mazili <ranieri85@gmail.com> (https://github.com/ranierimazili)",
+    "Matt Simerson <matt@tnpi.net> (https://github.com/msimerson)"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ranierimazili/ocsp.git"
+    "url": "git+https://github.com/msimerson/ocsp.git"
   },
   "license": "MIT",
   "devDependencies": {
