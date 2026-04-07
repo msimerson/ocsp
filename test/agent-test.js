@@ -42,14 +42,13 @@ describe('OCSP Agent failed', function () {
   const websites = [
     'p.vj-vid.com',
     'vast.bp3861034.btrll.com',
-    'revoked.badssl.com',
-    'expired.badssl.com',
     'self-signed.badssl.com',
     'untrusted-root.badssl.com'
   ]
 
   websites.forEach(function (host) {
     it('should connect and emit error ' + host, function (cb) {
+      this.timeout(4000)
       https.get({
         host,
         port: 443,

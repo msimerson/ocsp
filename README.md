@@ -1,8 +1,38 @@
 # OCSP client and server implementation in nodejs
 
+## Fork Changes
+In **ocsp.check** method was included a new option (requestByGet) to allow ocsp requests using GET method. You can see an usage example on [this project](https://github.com/ranierimazili/o2b2-ocsp-tests)
+
+## Server Usage Updated!
+
+Usage:
+
+```javascript
+var server = ocsp.Server.create({
+  caCert: cacert, //optional, will be the same as `cert` if not supplied
+  cert: cert,
+  key: key
+});
+
+server.addCert(43, 'good');
+server.addCert(44, 'revoked', {
+  revocationTime: new Date(),
+  revocationReason: 'CACompromise'
+});
+
+server.listen(8000);
+```
+
+OCSP Server, i.o.w. HTTP server providing OCSP responses for supplied OCSP
+requests.
+
+---
 This package is a fork of https://github.com/indutny/ocsp
 
 ## Changelog
+### 1.0.2
+- added the option requestByGet on check method to make GET OCSP requests instead of POST
+
 ### 1.0.1
 - node 16,18 compatibility
 - tests fixed
