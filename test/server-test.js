@@ -1,3 +1,5 @@
+'use strict'
+
 const { describe, it, after } = require('node:test')
 const assert = require('node:assert/strict')
 
