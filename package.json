@@ -4,6 +4,7 @@
   "description": "OCSP client and server APIs for node.js",
   "main": "lib/ocsp.js",
   "files": [
+    "CHANGELOG.md",
     "lib"
   ],
   "scripts": {
@@ -30,6 +31,9 @@
     "url": "git+https://github.com/msimerson/ocsp.git"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "asn1.js": "^5.4.1",
     "asn1.js-rfc2560": "^5.0.1",

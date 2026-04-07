@@ -1,3 +1,5 @@
+'use strict'
+
 const { describe, it, before, after } = require('node:test')
 const https = require('node:https')
 
