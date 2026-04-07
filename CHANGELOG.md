@@ -1,6 +1,13 @@
 # Changelog
 
-## 1.1.0 (@haraka/ocsp — msimerson)
+### Unreleased
+
+## [1.1.1] (@haraka/ocsp — msimerson)
+
+- doc(README): updated with modern syntax
+- feat: added index.d.ts
+
+## [1.1.0] (@haraka/ocsp — msimerson)
 
 - node >= 20
 - getResponses is now async
@@ -43,6 +50,9 @@
   - [cache clear feature](https://github.com/spurreiter/ocsp/commit/6a2f012a11d2fd7a515c16a80bc12e628cc29853)
 
 ## Prior history
+
+[1.1.1]: https://github.com/msimerson/ocsp/releases/tag/v1.1.1
+[1.1.0]: https://github.com/msimerson/ocsp/releases/tag/v1.1.0
 
 See the [indutny/ocsp](https://github.com/indutny/ocsp) repository for the
 original version history by Fedor Indutny.
