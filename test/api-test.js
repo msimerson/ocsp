@@ -1,29 +1,31 @@
+const { describe, it, before } = require('node:test')
+const assert = require('node:assert/strict')
+const tls = require('node:tls')
+const net = require('node:net')
+
 const ocsp = require('../')
 const fixtures = require('./fixtures')
 
-const assert = require('assert')
-const tls = require('tls')
-const net = require('net')
-
 describe('OCSP Stapling Provider', function () {
+  before(async () => {
+    await fixtures.googleReady
+  })
+
   describe('.check()', function () {
-    it('should validate google.com', function (cb) {
+    it('should validate google.com', (t, done) => {
       ocsp.check({
         cert: fixtures.google,
         issuer: fixtures.googleIssuer
       }, function (err, res) {
-        if (err) {
-          throw err
-        }
-
+        if (err) return done(err)
         assert.strictEqual(res.certStatus.type, 'good')
-        cb()
+        done()
       })
     })
   })
 
   describe('.verify()', function () {
-    it('should verify reddit.com\'s stapling', function (cb) {
+    it("should verify reddit.com's stapling", (t, done) => {
       try {
         const socket = new net.Socket()
         socket.setEncoding('utf8')
@@ -38,34 +40,31 @@ describe('OCSP Stapling Provider', function () {
           client.on('OCSPResponse', function (stapling) {
             if (stapling) {
               const cert = client.getPeerCertificate(true)
-
               const req = ocsp.request.generate(cert.raw, cert.issuerCertificate.raw)
               ocsp.verify({ request: req, response: stapling }, function (err, res) {
-                if (err) {
-                  return cb(err)
-                }
+                if (err) return done(err)
                 assert.strictEqual(res.certStatus.type, 'good')
                 client.destroy()
-                socket.end(cb)
+                socket.end(done)
               })
             } else {
-              cb(new Error('empty stapling'))
+              done(new Error('empty stapling'))
             }
           })
         })
 
         socket.connect(443, 'reddit.com')
       } catch (e) {
-        cb(e)
+        done(e)
       }
     })
   })
 
   describe('.getOCSPURI()', function () {
-    it('should work on cert without extensions', function (cb) {
+    it('should work on cert without extensions', (t, done) => {
       ocsp.getOCSPURI(fixtures.noExts, function (err) {
-        assert(err)
-        cb()
+        assert.ok(err)
+        done()
       })
     })
   })

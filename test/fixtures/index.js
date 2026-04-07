@@ -1,8 +1,8 @@
 const ocsp = require('../../')
 
-const https = require('https')
-const fs = require('fs')
-const path = require('path')
+const https = require('node:https')
+const fs = require('node:fs')
+const path = require('node:path')
 const rfc2560 = require('asn1.js-rfc2560')
 const rfc5280 = require('asn1.js-rfc5280')
 const keyGen = require('selfsigned.js').create()
@@ -26,22 +26,22 @@ const googleOptions = {
   }
 }
 
-const req = https.request(googleOptions, res => {
-  res.on('data', d => { })
-})
-  .on('error', e => {
-    console.error(e)
+exports.googleReady = new Promise((resolve, reject) => {
+  const req = https.request(googleOptions, res => {
+    res.on('data', () => {})
+  }).on('error', reject)
+
+  req.on('socket', socket => {
+    socket.on('secureConnect', () => {
+      const googleCerts = socket.getPeerCertificate(true)
+      exports.google = '-----BEGIN CERTIFICATE-----\n' + googleCerts.raw.toString('base64') + '\n-----END CERTIFICATE-----'
+      exports.googleIssuer = '-----BEGIN CERTIFICATE-----\n' + googleCerts.issuerCertificate.raw.toString('base64') + '\n-----END CERTIFICATE-----'
+      resolve()
+    })
   })
 
-req.on('socket', socket => {
-  socket.on('secureConnect', () => {
-    const googleCerts = socket.getPeerCertificate(true)
-    exports.google = '-----BEGIN CERTIFICATE-----\n' + googleCerts.raw.toString('base64') + '\n-----END CERTIFICATE-----'
-    exports.googleIssuer = '-----BEGIN CERTIFICATE-----\n' + googleCerts.issuerCertificate.raw.toString('base64') + '\n-----END CERTIFICATE-----'
-  })
+  req.end()
 })
-
-req.end()
 
 exports.noExts = fs.readFileSync(path.join(__dirname, 'no-exts-cert.pem'))
 

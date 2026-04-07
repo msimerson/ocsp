@@ -1,7 +1,8 @@
+const { describe, it, before, after } = require('node:test')
+const https = require('node:https')
+
 const ocsp = require('../')
 const fixtures = require('./fixtures')
-
-const https = require('https')
 
 describe('OCSP Cache', function () {
   const issuer = fixtures.certs.issuer
@@ -12,7 +13,8 @@ describe('OCSP Cache', function () {
   let httpServer
   let agent
   let cache
-  before(function (cb) {
+
+  before((t, done) => {
     server = ocsp.Server.create({
       cert: issuer.cert,
       key: issuer.key
@@ -25,23 +27,22 @@ describe('OCSP Cache', function () {
     })
 
     server.listen(8000, function () {
-      cb()
+      done()
     })
 
     agent = new ocsp.Agent()
-
     cache = new ocsp.Cache()
   })
 
-  after(function (cb) {
-    this.timeout(5100) // since node 19, http.globalAgent uses keep-alive connections default
+  after((t, done) => {
+    // since node 19, http.globalAgent uses keep-alive connections by default
     agent.destroy()
     server.close(() => {
-      httpServer.close(cb)
+      httpServer.close(done)
     })
-  })
+  }, { timeout: 5100 })
 
-  it('should cache ocsp response', function (cb) {
+  it('should cache ocsp response', (t, done) => {
     httpServer = https.createServer({
       cert: good.cert + '\n' + good.issuer,
       key: good.key
@@ -51,12 +52,9 @@ describe('OCSP Cache', function () {
 
     httpServer.on('OCSPRequest', function (cert, issuer, cb) {
       ocsp.getOCSPURI(cert, function (err, uri) {
-        if (err) {
-          return cb(err)
-        }
+        if (err) return cb(err)
 
-        const req = ocsp.request.generate(cert,
-          issuer || fixtures.certs.issuer.cert)
+        const req = ocsp.request.generate(cert, issuer || fixtures.certs.issuer.cert)
         const options = {
           url: uri,
           ocsp: req.data
@@ -72,11 +70,11 @@ describe('OCSP Cache', function () {
         rejectUnauthorized: false,
         servername: 'local.host',
         port: 8001
-      }, (res) => {
-        cb()
+      }, () => {
+        done()
       })
 
-      req.on('error', cb)
+      req.on('error', done)
       req.end()
     })
   })
