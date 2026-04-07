@@ -26,7 +26,7 @@ $ npm install @haraka/ocsp
 Usage:
 
 ```javascript
-var agent = new ocsp.Agent();
+const agent = new ocsp.Agent()
 
 https.request({
   method: ...,
@@ -35,10 +35,10 @@ https.request({
   path: ...,
   // Other options
 
-  agent: agent
-}, function(res) {
+  agent
+}, (res) => {
   // ...
-});
+})
 ```
 
 The following code snippet will perform a request to the specified server and
@@ -56,34 +56,29 @@ have the following properties:
 Usage:
 
 ```javascript
-var cache = new ocsp.Cache();
+const cache = new ocsp.Cache()
 
-var server = https.createServer({
+const server = https.createServer({
   cert: cert,
   key: key
-}, function(req, res) {
-  res.end('hello world');
-});
+}, (req, res) => {
+  res.end('hello world')
+})
 
-server.on('OCSPRequest', function(cert, issuer, cb) {
-  ocsp.getOCSPURI(cert, function(err, uri) {
-    if (err) return cb(err);
-    if (uri === null) return cb();
+server.on('OCSPRequest', (cert, issuer, cb) => {
+  ocsp.getOCSPURI(cert, (err, uri) => {
+    if (err) return cb(err)
+    if (uri === null) return cb()
 
-    var req = ocsp.request.generate(cert, issuer);
-    cache.probe(req.id, function(err, cached) {
-      if (err) return cb(err);
-      if (cached !== false) return cb(null, cached.response);
+    const req = ocsp.request.generate(cert, issuer)
+    cache.probe(req.id, (err, cached) => {
+      if (err) return cb(err)
+      if (cached !== false) return cb(null, cached.response)
 
-      var options = {
-        url: uri,
-        ocsp: req.data
-      };
-
-      cache.request(req.id, options, cb);
-    });
-  });
-});
+      cache.request(req.id, { url: uri, ocsp: req.data }, cb)
+    })
+  })
+})
 ```
 
 Cache should be used to provide [OCSP Stapling][1] responses to the client.
@@ -93,6 +88,13 @@ NOTE: Constructor accepts an `options` object with the following properties:
 * `probe`: override `.probe()` method
 * `store`: override `.store()` method
 * `filter`: `filter(url, callback)` to whitelist CA URLs to request
+
+Has the following methods:
+
+* `.probe(id, callback)` — check if a response is cached
+* `.request(id, options, callback)` — fetch and cache a fresh OCSP response
+* `.store(id, response, maxTime, callback)` — store a response manually
+* `.clear()` — clear all cached responses and cancel all pending timers
 
 ## Server
 
@@ -105,13 +107,13 @@ const server = ocsp.Server.create({
   key: key
 })
 
-server.addCert(43, 'good');
+server.addCert(43, 'good')
 server.addCert(44, 'revoked', {
   revocationTime: new Date(),
   revocationReason: 'CACompromise'
 })
 
-server.listen(8000);
+server.listen(8000)
 ```
 
 OCSP Server, i.e. an HTTP server providing OCSP responses for supplied OCSP
@@ -129,6 +131,13 @@ Has the following methods:
      `privelegeWithdrawn`, `AACompromise`)
 * All of `http.Server` methods!
 
+Constructor options:
+
+* `cert`: the server's certificate (PEM or Buffer)
+* `key`: the server's private key (PEM or Buffer)
+* `caCert`: the issuing CA certificate (PEM or Buffer); defaults to `cert`
+* `nextUpdate`: ms until the `nextUpdate` field in responses (Default: `86400000` — 24 hours)
+
 ## .check()
 
 Usage:
@@ -137,10 +146,8 @@ Usage:
 ocsp.check({
   cert: cert,
   issuer: issuerCert
-}, function(err, res) {
-  if (err)
-    throw err
-
+}, (err, res) => {
+  if (err) throw err
   console.log(res)
 })
 ```
@@ -150,8 +157,10 @@ contains the info.
 
 Options:
 
+* `cert`: the certificate to check (PEM, DER Buffer, or parsed)
+* `issuer`: the issuing CA certificate (PEM, DER Buffer, or parsed)
 * `requestByGet`: if `true`, the OCSP request is sent via HTTP GET instead of
-  POST (default: `false`)
+  POST (Default: `false`)
 
 ## .verify()
 
@@ -162,18 +171,25 @@ ocsp.verify({
   request: request,
   // Optional, `issuer: issuerCert,`
   response: response
-}, function(err, res) {
+}, (err, res) => {
 })
 ```
 
 Verify that `response` matches the `request` and is signed by the CA.
+
+Options:
+
+* `request`: an OCSP request object (from `request.generate()`)
+* `response`: raw OCSP response Buffer
+* `issuer`: issuing CA certificate, if not already present on `request.issuer`
+* `nudge`: clock skew tolerance in ms for `thisUpdate`/`nextUpdate` checks (Default: `60000`)
 
 ## request.generate()
 
 Usage:
 
 ```javascript
-var req = ocsp.request.generate(cert, issuerCert);
+const req = ocsp.request.generate(cert, issuerCert)
 ```
 
 Generate an OCSP request for `.verify()` or for sending manually to an OCSP server.
@@ -183,7 +199,7 @@ Generate an OCSP request for `.verify()` or for sending manually to an OCSP serv
 Usage:
 
 ```javascript
-ocsp.getOCSPURI(cert, function(err, uri) {
+ocsp.getOCSPURI(cert, (err, uri) => {
 })
 ```
 

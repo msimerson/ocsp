@@ -2,5 +2,8 @@ node_modules/
 npm-debug.log
 .idea
 .DS_Store
+.gitmodules
+.release
 CLAUDE.md
 .github/copilot-instructions.md
+package-lock.json
