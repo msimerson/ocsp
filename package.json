@@ -1,6 +1,6 @@
 {
   "name": "@haraka/ocsp",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "OCSP client and server APIs for node.js",
   "main": "lib/ocsp.js",
   "types": "index.d.ts",
@@ -36,10 +36,10 @@
   "engines": {
     "node": ">=20"
   },
+  "devDependencies": {},
   "dependencies": {
     "asn1.js": "^5.4.1",
     "asn1.js-rfc2560": "^5.0.1",
-    "asn1.js-rfc5280": "^3.0.0",
-    "simple-lru-cache": "^0.0.2"
+    "asn1.js-rfc5280": "^3.0.0"
   }
 }
