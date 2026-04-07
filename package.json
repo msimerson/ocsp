@@ -7,8 +7,8 @@
     "lib"
   ],
   "scripts": {
-    "lint": "standard",
-    "lint:fix": "standard --fix",
+    "lint": "npx -y standard",
+    "lint:fix": "npx -y standard --fix",
     "test": "node --test test/*-test.js",
     "test:coverage": "node --experimental-test-coverage --test test/*-test.js",
     "versions": "npx npm-dep-mgr check",
@@ -30,10 +30,6 @@
     "url": "git+https://github.com/msimerson/ocsp.git"
   },
   "license": "MIT",
-  "devDependencies": {
-    "selfsigned.js": "^3.0.2",
-    "standard": "^17.1.2"
-  },
   "dependencies": {
     "asn1.js": "^5.4.1",
     "asn1.js-rfc2560": "^5.0.1",

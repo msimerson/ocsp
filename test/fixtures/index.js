@@ -1,20 +1,10 @@
-const ocsp = require('../../')
+'use strict'
 
 const https = require('node:https')
 const fs = require('node:fs')
 const path = require('node:path')
-const rfc2560 = require('asn1.js-rfc2560')
-const rfc5280 = require('asn1.js-rfc5280')
-const keyGen = require('selfsigned.js').create()
 
-/*
-   AuthorityInfoAccessSyntax  ::=
-           SEQUENCE SIZE (1..MAX) OF AccessDescription
-
-   AccessDescription  ::=  SEQUENCE {
-           accessMethod          OBJECT IDENTIFIER,
-           accessLocation        GeneralName  }
- */
+require('./gen-certs').checkAndGenerate()
 
 const googleOptions = {
   hostname: 'google.com',
@@ -45,83 +35,20 @@ exports.googleReady = new Promise((resolve, reject) => {
 
 exports.noExts = fs.readFileSync(path.join(__dirname, 'no-exts-cert.pem'))
 
-exports.certs = {};
+exports.certs = {}
 
-['issuer', 'good', 'revoked'].forEach(function (name) {
+for (const name of ['issuer', 'good', 'revoked']) {
   exports.certs[name] = {
     cert: fs.readFileSync(path.join(__dirname, name + '-cert.pem')),
     key: fs.readFileSync(path.join(__dirname, name + '-key.pem'))
   }
-})
+}
 
-exports.getOCSPCert = function getOCSPCert (options, cb) {
-  if (!options) { options = {} }
+exports.serverCerts = {}
 
-  const size = options.size || 256
-  const commonName = options.commonName || 'local.host'
-  const OCSPEndPoint = options.OCSPEndPoint || 'http://127.0.0.1:8000/ocsp'
-
-  let issuer = options.issuer
-  if (issuer) { issuer = ocsp.utils.toDER(issuer, 'CERTIFICATE') }
-  if (issuer) { issuer = rfc5280.Certificate.decode(issuer, 'der') }
-
-  let issuerKeyData = options.issuerKey
-
-  if (issuerKeyData) { issuerKeyData = ocsp.utils.toDER(options.issuerKey, 'RSA PRIVATE KEY') }
-
-  if (issuerKeyData) { issuerKeyData = ocsp.utils.RSAPrivateKey.decode(issuerKeyData, 'der') } else { issuerKeyData = options.issuerKeyData }
-
-  function getPrime (cb) {
-    keyGen.getPrime(size >> 1, function (err, prime) {
-      if (err) { return getPrime(cb) }
-
-      cb(prime)
-    })
+for (const name of ['issuer', 'good', 'revoked']) {
+  exports.serverCerts[name] = {
+    cert: fs.readFileSync(path.join(__dirname, 'server', name + '-cert.pem')),
+    key: fs.readFileSync(path.join(__dirname, 'server', name + '-key.pem'))
   }
-
-  function getTwoPrimes (cb) {
-    const primes = []
-    getPrime(done)
-    getPrime(done)
-
-    function done (prime) {
-      primes.push(prime)
-      if (primes.length === 2) { return cb(primes[0], primes[1]) }
-    }
-  }
-
-  function getKeyData (cb) {
-    getTwoPrimes(function (p, q) {
-      const keyData = keyGen.getKeyData(p, q)
-      if (!keyData) { return getKeyData(cb) }
-
-      cb(keyData)
-    })
-  }
-
-  const ext = rfc5280.AuthorityInfoAccessSyntax.encode([{
-    accessMethod: rfc2560['id-pkix-ocsp'],
-    accessLocation: {
-      type: 'uniformResourceIdentifier',
-      value: OCSPEndPoint
-    }
-  }], 'der')
-
-  getKeyData(function (keyData) {
-    const certData = keyGen.getCertData({
-      serial: options.serial,
-      keyData,
-      commonName,
-      issuer,
-      issuerKeyData,
-      extensions: [{
-        extnID: [1, 3, 6, 1, 5, 5, 7, 1, 1], // rfc5280['id-pe-authorityInfoAccess'],
-        critical: false,
-        extnValue: ext
-      }]
-    })
-
-    const pem = keyGen.getCert(certData, 'pem')
-    return cb(pem, keyGen.getPrivate(keyData, 'pem'))
-  })
 }

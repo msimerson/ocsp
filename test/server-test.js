@@ -1,4 +1,4 @@
-const { describe, it, before, after } = require('node:test')
+const { describe, it, after } = require('node:test')
 const assert = require('node:assert/strict')
 
 const ocsp = require('../')
@@ -6,21 +6,12 @@ const fixtures = require('./fixtures')
 
 const OCSP_PORT = 8002
 
-function getOCSPCert (options) {
-  return new Promise((resolve) => {
-    fixtures.getOCSPCert(options, (cert, key) => resolve({ cert, key }))
-  })
-}
-
 describe('OCSP Server', function () {
-  let issuer, good, revoked, server
+  let server
 
-  before(async () => {
-    const opts = { size: 1024, OCSPEndPoint: `http://127.0.0.1:${OCSP_PORT}/ocsp` }
-    issuer = await getOCSPCert({ ...opts, serial: 42, commonName: 'mega.ca' })
-    good = await getOCSPCert({ ...opts, serial: 43, issuer: issuer.cert, issuerKey: issuer.key })
-    revoked = await getOCSPCert({ ...opts, serial: 44, issuer: issuer.cert, issuerKey: issuer.key })
-  })
+  const issuer = fixtures.serverCerts.issuer
+  const good = fixtures.serverCerts.good
+  const revoked = fixtures.serverCerts.revoked
 
   after((t, done) => {
     server.close(done)

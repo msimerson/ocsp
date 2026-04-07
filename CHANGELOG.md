@@ -1,15 +1,16 @@
 # Changelog
 
 ## 1.1.0 (@haraka/ocsp — msimerson)
-- test: replace mocha with node:test
-  - test fixes due to tests running concurrently
 - chore: fully qualify node modules
 - style(es6/7): replace forEach with for...of
   - 
-- gracefully skip OCSP validation when a certificate has no OCSP URL in its AIA extension (e.g. Let's Encrypt certs)
-- added `caCert` option to `ocsp.Server.create()` (separate CA cert from server cert)
+- fix: skip OCSP validation when cert has no OCSP URL (e.g. LE certs)
+- added `caCert` option to `ocsp.Server.create()` (separate CA from server cert)
 - ci: replace Travis with GitHub Actions
+- deps: refactored test setup to remove all dev dependencies
 - deps: bump dependency versions
+- test: replace mocha with node:test
+- test fixes due to tests running concurrently
 
 ## 1.0.2 (@ranierimazili/ocsp — ranierimazili)
 - added `requestByGet` option to `ocsp.check()` to make OCSP requests via HTTP GET instead of POST
