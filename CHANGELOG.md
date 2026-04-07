@@ -1,12 +1,17 @@
 # Changelog
 
 ## 1.1.0 (@haraka/ocsp — msimerson)
-- chore: fully qualify node modules
+
+### Changes
+
+- getResponses is now async
+- chore: fully qualify node modules (eg. http -> node:http)
 - style(es6/7): replace forEach with for...of
   - 
 - fix: skip OCSP validation when cert has no OCSP URL (e.g. LE certs)
 - added `caCert` option to `ocsp.Server.create()` (separate CA from server cert)
 - ci: replace Travis with GitHub Actions
+- dep(async): refactored away with Promise.all
 - deps: refactored test setup to remove all dev dependencies
 - deps: bump dependency versions
 - test: replace mocha with node:test
